@@ -11,7 +11,7 @@ using std::cout;
 class User
 {
 public:
-	User(string Email, string Password, string FirstName, string LastName);
+	User(string email, string password, string firstName, string lastName);
 	~User();
 
 	string getEmail();
@@ -19,17 +19,14 @@ public:
 	string getFirstName();
 	string getLastName();
 
+	bool checkEmail(string& email);
+	bool checkPassword(string& password);
+
 private:
-	string Email;
-	string Password;
-
-	string FirstName;
-	string LastName;
-
 	const char specialCharacters[10] = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')' };
 
-	void setEmail(string& Email);
-	void setPassword(string& Password);
-	void setFirstName(string& FirstName);
-	void setLastName(string& LastName);
+	string email;
+	string password;
+	string firstName;
+	string lastName;
 };
