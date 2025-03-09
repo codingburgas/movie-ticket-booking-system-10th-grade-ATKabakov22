@@ -1,5 +1,14 @@
 #include "../include/User.h"
 
+#include <iostream>
+#include <cstdlib>
+#include <regex>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using std::string;
+using std::cout;
+
 User::User(string email, string password, string firstName, string lastName)
 {
 	this->password = password;
@@ -11,6 +20,7 @@ User::User(string email, string password, string firstName, string lastName)
 User::~User()
 {
 }
+
 
 bool User::checkEmail(string& email)
 {
@@ -47,6 +57,45 @@ bool User::checkPassword(string& password)
 	}
 	cout << "password must contain at least one special character" << std::endl;
 	return false;
+}
+
+
+void User::saveToFile(const std::string& fileName)
+{
+	nlohmann::json data;
+	data["email"] = this->email;
+	data["password"] = this->password;
+	data["firstName"] = this->firstName;
+	data["lastName"] = this->lastName;
+
+	std::ofstream file(fileName); 
+	if (file.is_open()) {
+		file << data.dump(4);  
+		file.close();
+		cout << "Data saved to " << fileName << std::endl;
+	}
+	else {
+		std::cerr << "Could not open file for writing!" << std::endl;
+	}
+}
+
+void User::loadFromFile(const std::string& fileName) 
+{
+	std::ifstream file(fileName);
+	if (file.is_open()) {
+		nlohmann::json data;
+		file >> data;
+		file.close();
+
+		this->email = data["email"];
+		this->password = data["password"];
+		this->firstName = data["firstName"];
+		this->lastName = data["lastName"];
+		cout << "Data loaded from " << fileName << std::endl;
+	}
+	else {
+		std::cerr << "Could not open file for reading!" << std::endl;
+	}
 }
 
 

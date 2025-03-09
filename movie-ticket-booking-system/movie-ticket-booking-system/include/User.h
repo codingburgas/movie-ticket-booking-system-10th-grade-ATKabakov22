@@ -1,32 +1,29 @@
 #pragma once
 
 #include <string>
-#include <iostream>
-#include <cstdlib>
-#include <regex>
-
-using std::string;
-using std::cout;
 
 class User
 {
 public:
-	User(string email, string password, string firstName, string lastName);
+	User(std::string email, std::string password, std::string firstName, std::string lastName);
 	~User();
 
-	string getEmail();
-	string getPassword();
-	string getFirstName();
-	string getLastName();
+	std::string getEmail();
+	std::string getPassword();
+	std::string getFirstName();
+	std::string getLastName();
 
-	bool checkEmail(string& email);
-	bool checkPassword(string& password);
+	bool checkEmail(std::string& email);
+	bool checkPassword(std::string& password);
+
+	void saveToFile(const std::string& fileName);
+	void loadFromFile(const std::string& fileName);
 
 private:
 	const char specialCharacters[10] = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')' };
 
-	string email;
-	string password;
-	string firstName;
-	string lastName;
+	std::string email;
+	std::string password;
+	std::string firstName;
+	std::string lastName;
 };
