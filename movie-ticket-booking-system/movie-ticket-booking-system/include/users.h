@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+#include <cstdlib>
 
 using std::string;
 
@@ -22,8 +24,8 @@ private:
 	string FirstName;
 	string LastName;
 
-	void SetEmail(string Email);
-	void SetPassword(string Password);
-	void SetFirstName(string FirstName);
-	void SetLastName(string LastName);
+	void SetEmail(string& Email);
+	void SetPassword(string& Password);
+	void SetFirstName(string& FirstName);
+	void SetLastName(string& LastName);
 };

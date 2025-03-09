@@ -1,37 +1,47 @@
 #include "../include/users.h"
 
-
 User::User(string Email, string Password, string FirstName, string LastName)
 {
-	SetLastName(LastName);
-	SetFirstName(FirstName);
-	SetPassword(Password);
 	SetEmail(Email);
+	SetPassword(Password);
+	SetFirstName(FirstName);
+	SetLastName(LastName);
 }
 
 User::~User()
 {
 }
 
-void User::SetEmail(string Email)
+void User::SetEmail(string& Email)
 {
-	this->Email = Email;
+	string domain = Email.substr(Email.find('@') + 1);
+	string command = "nslookup -type=MX " + domain + " > nul 2>&1";
+
+	if (std::system(command.c_str()) != 0) {
+		this->Email = Email;
+	}
+	else {
+		std::cout << "Invalid email address" << std::endl;
+		exit(1);
+	}
 }
 
-void User::SetPassword(string Password)
+void User::SetPassword(string& Password)
 {
 	this->Password = Password;
 }
 
-void User::SetFirstName(string FirstName)
+void User::SetFirstName(string& FirstName)
 {
 	this->FirstName = FirstName;
 }
 
-void User::SetLastName(string LastName)
+void User::SetLastName(string& LastName)
 {
 	this->LastName = LastName;
 }
+
+
 
 string User::GetEmail()
 {
