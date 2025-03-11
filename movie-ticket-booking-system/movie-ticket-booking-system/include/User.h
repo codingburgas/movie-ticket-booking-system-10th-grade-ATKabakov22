@@ -13,11 +13,11 @@ public:
 	std::string getFirstName();
 	std::string getLastName();
 
-	bool checkEmail(std::string& email);
-	bool checkPassword(std::string& password);
+	bool checkEmail(const std::string& email);
+	bool checkPassword(const std::string& password);
 
 	void saveToFile(const std::string& fileName);
-	void loadFromFile(const std::string& fileName);
+	void loadFromFile(const string& fileName, const string& index);
 
 private:
 	const char specialCharacters[10] = { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')' };

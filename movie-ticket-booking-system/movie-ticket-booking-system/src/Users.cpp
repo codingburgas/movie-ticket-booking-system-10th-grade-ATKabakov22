@@ -22,7 +22,7 @@ User::~User()
 }
 
 
-bool User::checkEmail(string& email)
+bool User::checkEmail(const string& email)
 {
 	std::regex email_regex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
 	if (!std::regex_match(email, email_regex)) {
@@ -42,7 +42,7 @@ bool User::checkEmail(string& email)
 	}
 }
 
-bool User::checkPassword(string& password)
+bool User::checkPassword(const string& password)
 {
 	if (password.size() < 6)
 	{
@@ -59,27 +59,40 @@ bool User::checkPassword(string& password)
 	return false;
 }
 
-
-void User::saveToFile(const std::string& fileName)
+void User::saveToFile(const string& fileName)
 {
+	std::ifstream inFile(fileName);
+	nlohmann::json existingData;
+
+	if (inFile.is_open()) {
+		inFile >> existingData;
+		inFile.close();
+	}
+
+	if (!existingData.is_array()) {
+		existingData = nlohmann::json::array();
+	}
+
 	nlohmann::json data;
 	data["email"] = this->email;
 	data["password"] = this->password;
 	data["firstName"] = this->firstName;
 	data["lastName"] = this->lastName;
 
-	std::ofstream file(fileName); 
-	if (file.is_open()) {
-		file << data.dump(4);  
-		file.close();
-		cout << "Data saved to " << fileName << std::endl;
+	existingData.push_back(data);
+
+	std::ofstream outFile(fileName);
+	if (outFile.is_open()) {
+		outFile << existingData.dump(4);
+		outFile.close();
+		std::cout << "Data saved to " << fileName << std::endl;
 	}
 	else {
 		std::cerr << "Could not open file for writing!" << std::endl;
 	}
 }
 
-void User::loadFromFile(const std::string& fileName) 
+void User::loadFromFile(const string& fileName, const string& index)
 {
 	std::ifstream file(fileName);
 	if (file.is_open()) {
@@ -87,11 +100,14 @@ void User::loadFromFile(const std::string& fileName)
 		file >> data;
 		file.close();
 
-		this->email = data["email"];
-		this->password = data["password"];
-		this->firstName = data["firstName"];
-		this->lastName = data["lastName"];
-		cout << "Data loaded from " << fileName << std::endl;
+		for (const auto& item : data) {
+			if (item["email"] == index) {
+				cout << "Email: " << item["email"] << "\n"
+					<< "First Name: " << item["lastName"] << "\n"
+					<< "Last Name: " << item["lastName"] << "\n"
+					<< "Password: " << item["password"] << "\n\n";
+			}
+		}
 	}
 	else {
 		std::cerr << "Could not open file for reading!" << std::endl;
