@@ -1,4 +1,5 @@
 #include "../include/User.h"
+#include "../include/Utiles.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -9,12 +10,9 @@
 using std::string;
 using std::cout;
 
-User::User(string email, string password, string firstName, string lastName)
+User::User(std::string email, std::string password, std::string firstName, std::string lastName)
+	: email(email), password(password), firstName(firstName), lastName(lastName)
 {
-	this->password = password;
-	this->email = email;
-	this->firstName = firstName;
-	this->lastName = lastName;
 }
 
 User::~User()
@@ -22,8 +20,20 @@ User::~User()
 }
 
 
-bool User::checkEmail(const string& email)
+bool User::checkEmail(const string& email, const string& fileName)
 {
+	Utiles utiles;
+	nlohmann::json data;
+	if (!utiles.isFileEmpty(fileName)) {
+		utiles.loadFile(fileName, data);
+	}
+
+	for (const auto& item : data) {
+		if (item["email"] == email) {
+			cout << "Email already exists" << std::endl;
+			return false;
+		}
+	}
 	std::regex email_regex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
 	if (!std::regex_match(email, email_regex)) {
 		cout << "Invalid email" << std::endl;
@@ -59,14 +69,12 @@ bool User::checkPassword(const string& password)
 	return false;
 }
 
-void User::saveToFile(const string& fileName)
-{
-	std::ifstream inFile(fileName);
+void User::saveToFile(const string& fileName) {
+	Utiles utiles;
 	nlohmann::json existingData;
 
-	if (inFile.is_open()) {
-		inFile >> existingData;
-		inFile.close();
+	if (!utiles.isFileEmpty(fileName)) {
+		utiles.loadFile(fileName, existingData);
 	}
 
 	if (!existingData.is_array()) {
@@ -74,6 +82,7 @@ void User::saveToFile(const string& fileName)
 	}
 
 	nlohmann::json data;
+	data["id"] = existingData.size() + 1;
 	data["email"] = this->email;
 	data["password"] = this->password;
 	data["firstName"] = this->firstName;
@@ -92,26 +101,51 @@ void User::saveToFile(const string& fileName)
 	}
 }
 
-void User::loadFromFile(const string& fileName, const string& index)
+void User::loadFromFile(const string& fileName, const string& emailToFind)
 {
-	std::ifstream file(fileName);
-	if (file.is_open()) {
-		nlohmann::json data;
-		file >> data;
-		file.close();
+	Utiles utiles;
+	nlohmann::json data;
+	if (!utiles.isFileEmpty(fileName)) {
+		utiles.loadFile(fileName, data);
+	}
 
-		for (const auto& item : data) {
-			if (item["email"] == index) {
-				cout << "Email: " << item["email"] << "\n"
-					<< "First Name: " << item["lastName"] << "\n"
-					<< "Last Name: " << item["lastName"] << "\n"
-					<< "Password: " << item["password"] << "\n\n";
-			}
+	for (const auto& item : data) {
+		if (item["email"] == emailToFind) {
+			this->id = item["id"];
+			this->email = item["email"];
+			this->firstName = item["firstName"];
+			this->lastName = item["lastName"];
+			this->password = item["password"];
+			displayUser();
+
 		}
 	}
-	else {
-		std::cerr << "Could not open file for reading!" << std::endl;
+}
+
+void User::loadFromFile(const string& fileName, const size_t& index)
+{
+	Utiles utiles;
+	nlohmann::json data;
+	if (!utiles.isFileEmpty(fileName)) {
+		utiles.loadFile(fileName, data);
 	}
+	if (index < data.size()) {
+		this->id = data[index]["id"];
+		this->email = data[index]["email"];
+		this->firstName = data[index]["firstName"];
+		this->lastName = data[index]["lastName"];
+		this->password = data[index]["password"];
+		displayUser();
+	}
+}
+
+void User::displayUser()
+{
+	cout << "id: " << this->id << "\n";
+	cout << "Email: " << this->email << "\n";
+	cout << "First Name: " << this->firstName << "\n";
+	cout << "Last Name: " << this->lastName << "\n";
+	cout << "Password: " << this->password << "\n";
 }
 
 
