@@ -6,7 +6,7 @@
 class Utiles
 {
 public:
-	void loadFile(const std::string& fileName, std::string& dataToSave);
-	void loadFile(const std::string& fileName, nlohmann::json& dataToSave);
-	bool isFileEmpty(const std::string& fileName);
+	static void loadFile(const std::string& fileName, std::string& dataToSave);
+	static void loadFile(const std::string& fileName, nlohmann::json& dataToSave);
+	static bool isFileEmpty(const std::string& fileName);
 };

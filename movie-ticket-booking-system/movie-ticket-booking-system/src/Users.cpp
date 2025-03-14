@@ -22,10 +22,9 @@ User::~User()
 
 bool User::checkEmail(const string& email, const string& fileName)
 {
-	Utiles utiles;
 	nlohmann::json data;
-	if (!utiles.isFileEmpty(fileName)) {
-		utiles.loadFile(fileName, data);
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, data);
 	}
 
 	for (const auto& item : data) {
@@ -70,11 +69,10 @@ bool User::checkPassword(const string& password)
 }
 
 void User::saveToFile(const string& fileName) {
-	Utiles utiles;
 	nlohmann::json existingData;
 
-	if (!utiles.isFileEmpty(fileName)) {
-		utiles.loadFile(fileName, existingData);
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, existingData);
 	}
 
 	if (!existingData.is_array()) {
@@ -103,10 +101,9 @@ void User::saveToFile(const string& fileName) {
 
 void User::loadFromFile(const string& fileName, const string& emailToFind)
 {
-	Utiles utiles;
 	nlohmann::json data;
-	if (!utiles.isFileEmpty(fileName)) {
-		utiles.loadFile(fileName, data);
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, data);
 	}
 
 	for (const auto& item : data) {
@@ -117,17 +114,17 @@ void User::loadFromFile(const string& fileName, const string& emailToFind)
 			this->lastName = item["lastName"];
 			this->password = item["password"];
 			displayUser();
-
+			return;
 		}
 	}
+	std::cerr << "User not found!" << std::endl;
 }
 
 void User::loadFromFile(const string& fileName, const size_t& index)
 {
-	Utiles utiles;
 	nlohmann::json data;
-	if (!utiles.isFileEmpty(fileName)) {
-		utiles.loadFile(fileName, data);
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, data);
 	}
 	if (index < data.size()) {
 		this->id = data[index]["id"];
@@ -136,6 +133,31 @@ void User::loadFromFile(const string& fileName, const size_t& index)
 		this->lastName = data[index]["lastName"];
 		this->password = data[index]["password"];
 		displayUser();
+	}
+	else {
+		std::cerr << "Index out of range!" << std::endl;
+	}
+}
+
+void User::deleteFromFile(const string& fileName){
+	nlohmann::json data;
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, data);
+	}
+	nlohmann::json newData = nlohmann::json::array();
+	for (const auto& item : data) {
+		if (item["email"] != this->email) {
+			newData.push_back(item);
+		}
+	}
+	std::ofstream outFile(fileName);
+	if (outFile.is_open()) {
+		outFile << newData.dump(4);
+		outFile.close();
+		std::cout << "User deleted" << std::endl;
+	}
+	else {
+		std::cerr << "Could not open file for writing!" << std::endl;
 	}
 }
 
@@ -148,6 +170,12 @@ void User::displayUser()
 	cout << "Password: " << this->password << "\n";
 }
 
+void User::eraseUser() {
+	this->email = "";
+	this->firstName ="";
+	this->lastName = "";
+	this->password = "";
+}
 
 string User::getEmail()
 {
@@ -167,4 +195,4 @@ string User::getFirstName()
 string User::getLastName()
 {
 	return this->lastName;
-}
+} 
