@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <regex>
 #include <fstream>
-#include <nlohmann/json.hpp>
 
 using std::string;
 using std::cout;
@@ -18,7 +17,6 @@ User::User(std::string email, std::string password, std::string firstName, std::
 User::~User()
 {
 }
-
 
 bool User::checkEmail(const string& email, const string& fileName)
 {
@@ -68,35 +66,13 @@ bool User::checkPassword(const string& password)
 	return false;
 }
 
-void User::saveToFile(const string& fileName) {
-	nlohmann::json existingData;
-
-	if (!Utiles::isFileEmpty(fileName)) {
-		Utiles::loadFile(fileName, existingData);
-	}
-
-	if (!existingData.is_array()) {
-		existingData = nlohmann::json::array();
-	}
-
+nlohmann::json User::saveAsJson() {
 	nlohmann::json data;
-	data["id"] = existingData.size() + 1;
 	data["email"] = this->email;
 	data["password"] = this->password;
 	data["firstName"] = this->firstName;
 	data["lastName"] = this->lastName;
-
-	existingData.push_back(data);
-
-	std::ofstream outFile(fileName);
-	if (outFile.is_open()) {
-		outFile << existingData.dump(4);
-		outFile.close();
-		std::cout << "Data saved to " << fileName << std::endl;
-	}
-	else {
-		std::cerr << "Could not open file for writing!" << std::endl;
-	}
+	return data;
 }
 
 void User::loadFromFile(const string& fileName, const string& emailToFind)
@@ -196,3 +172,8 @@ string User::getLastName()
 {
 	return this->lastName;
 } 
+
+size_t User::getId()
+{
+	return this->id;
+}

@@ -135,11 +135,17 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Admin.cpp" />
+    <ClCompile Include="src\Member.cpp" />
+    <ClCompile Include="src\Movie.cpp" />
     <ClCompile Include="src\Users.cpp" />
+    <ClCompile Include="src\Utiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Admin.h" />
+    <ClInclude Include="include\Member.h" />
+    <ClInclude Include="include\Movie.h" />
     <ClInclude Include="include\User.h" />
+    <ClInclude Include="include\Utiles.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

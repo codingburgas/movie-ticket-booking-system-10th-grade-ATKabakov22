@@ -29,6 +29,35 @@ void Utiles::loadFile(const std::string& fileName, nlohmann::json& dataToSave)
 	}
 }
 
+void Utiles::saveToFile(const std::string& fileName, const nlohmann::json& data) {
+	nlohmann::json existingData;
+	nlohmann::json inData = data;
+
+	if (!Utiles::isFileEmpty(fileName)) {
+		Utiles::loadFile(fileName, existingData);
+	}
+
+	if (!existingData.is_array()) {
+		existingData = nlohmann::json::array();
+	}
+
+	inData["id"] = existingData.size() + 1;
+
+
+	existingData.push_back(inData);
+
+	std::ofstream outFile(fileName);
+	if (outFile.is_open()) {
+		outFile << existingData.dump(4);
+		outFile.close();
+		std::cout << "Data saved to " << fileName << std::endl;
+	}
+	else {
+		std::cerr << "Could not open file for writing!" << std::endl;
+	}
+}
+
+
 bool Utiles::isFileEmpty(const std::string& fileName) {
     std::ifstream file(fileName);
 
